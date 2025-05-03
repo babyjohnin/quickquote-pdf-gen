@@ -1,11 +1,26 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from "react";
+import ProposalForm from "@/components/ProposalForm";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <header className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">QuickQuote</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Generate professional PDF proposals instantly. Fill out the form below and click
+            "Generate Proposal" to create a downloadable PDF proposal.
+          </p>
+        </header>
+        
+        <main className="max-w-3xl mx-auto pb-16">
+          <ProposalForm />
+        </main>
+        
+        <footer className="text-center text-gray-500 text-sm mt-8">
+          <p>© {new Date().getFullYear()} QuickQuote • Create professional proposals in seconds</p>
+        </footer>
       </div>
     </div>
   );
