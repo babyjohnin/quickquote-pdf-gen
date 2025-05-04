@@ -6,8 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { generatePDF } from "@/utils/pdfGenerator";
-import { FileText } from "lucide-react";
+import { FileText, Eye, Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import ProposalTemplate from "@/components/ProposalTemplate";
 
 type FormData = {
   freelancerName: string;
@@ -36,6 +37,7 @@ const ProposalForm = () => {
     paymentTerms: "",
     notes: "",
   });
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -47,10 +49,7 @@ const ProposalForm = () => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validate required fields
+  const validateForm = () => {
     const requiredFields = [
       "freelancerName", 
       "freelancerEmail", 
@@ -70,15 +69,33 @@ const ProposalForm = () => {
         description: "Please fill out all required fields before generating the proposal.",
         variant: "destructive",
       });
-      return;
+      return false;
     }
+    return true;
+  };
 
+  const handlePreview = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    setIsPreviewMode(true);
+    
+    toast({
+      title: "Proposal Preview Ready",
+      description: "You can now review your proposal before downloading.",
+    });
+  };
+
+  const handleDownload = async () => {
     try {
       toast({
         title: "Generating PDF",
-        description: "Your proposal is being created...",
+        description: "Your proposal is being created for download...",
       });
+      
       await generatePDF(formData);
+      
       toast({
         title: "Success!",
         description: "Your proposal has been generated and downloaded.",
@@ -93,8 +110,39 @@ const ProposalForm = () => {
     }
   };
 
+  const handleBackToForm = () => {
+    setIsPreviewMode(false);
+  };
+
+  if (isPreviewMode) {
+    return (
+      <div className="space-y-8">
+        <div className="flex justify-between items-center">
+          <Button 
+            variant="outline" 
+            onClick={handleBackToForm}
+            className="mb-4"
+          >
+            <Eye className="mr-2 h-5 w-5" /> Back to Editor
+          </Button>
+          
+          <Button 
+            onClick={handleDownload}
+            className="mb-4"
+          >
+            <Download className="mr-2 h-5 w-5" /> Download PDF
+          </Button>
+        </div>
+        
+        <div className="border rounded-lg shadow-lg overflow-hidden bg-white">
+          <ProposalTemplate {...formData} />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handlePreview} className="space-y-8">
       <Card>
         <CardContent className="pt-6">
           <h2 className="text-lg font-semibold mb-4">Your Information</h2>
@@ -255,7 +303,7 @@ const ProposalForm = () => {
         size="lg" 
         className="w-full text-lg py-6 font-semibold"
       >
-        <FileText className="mr-2 h-5 w-5" /> Generate Proposal
+        <Eye className="mr-2 h-5 w-5" /> Preview Proposal
       </Button>
     </form>
   );
